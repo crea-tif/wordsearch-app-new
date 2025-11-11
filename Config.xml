@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.edufun.wordsearch" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>الكلمات الخفية - أسماء الله الحسنى</name>
+    <description>
+        تطبيق تعليمي ممتع للعثور على أسماء الله الحسنى في شبكة من الحروف.
+        اختبر معرفتك وتعلم أسماء الله الحسنى بطريقة تفاعلية مسلية.
+    </description>
+    <author email="support@edufun.com" href="https://edufun.com">
+        فريق EDUFUN
+    </author>
+    
+    <content src="index.html" />
+    <access origin="*" />
+    
+    <!-- إعدادات Android -->
+    <preference name="android-minSdkVersion" value="22" />
+    <preference name="android-targetSdkVersion" value="33" />
+    <preference name="Orientation" value="portrait" />
+    <preference name="Fullscreen" value="false" />
+    <preference name="StatusBarOverlaysWebView" value="false" />
+    <preference name="StatusBarBackgroundColor" value="#0f172a" />
+    <preference name="ShowSplashScreenSpinner" value="false" />
+    
+    <!-- الأيقونات -->
+    <icon src="res/icon.png" />
+    
+    <!-- شاشة الترحيب -->
+    <splash src="res/splash.png" />
+    
+    <!-- المنصات -->
+    <platform name="android">
+        <icon density="ldpi" src="res/android/icon-36-ldpi.png" />
+        <icon density="mdpi" src="res/android/icon-48-mdpi.png" />
+        <icon density="hdpi" src="res/android/icon-72-hdpi.png" />
+        <icon density="xhdpi" src="res/android/icon-96-xhdpi.png" />
+        <icon density="xxhdpi" src="res/android/icon-144-xxhdpi.png" />
+        <icon density="xxxhdpi" src="res/android/icon-192-xxxhdpi.png" />
+        
+        <splash density="land-ldpi" src="res/android/splash-land-ldpi.png" />
+        <splash density="land-mdpi" src="res/android/splash-land-mdpi.png" />
+        <splash density="land-hdpi" src="res/android/splash-land-hdpi.png" />
+        <splash density="land-xhdpi" src="res/android/splash-land-xhdpi.png" />
+        <splash density="land-xxhdpi" src="res/android/splash-land-xxhdpi.png" />
+        <splash density="land-xxxhdpi" src="res/android/splash-land-xxxhdpi.png" />
+        <splash density="port-ldpi" src="res/android/splash-port-ldpi.png" />
+        <splash density="port-mdpi" src="res/android/splash-port-mdpi.png" />
+        <splash density="port-hdpi" src="res/android/splash-port-hdpi.png" />
+        <splash density="port-xhdpi" src="res/android/splash-port-xhdpi.png" />
+        <splash density="port-xxhdpi" src="res/android/splash-port-xxhdpi.png" />
+        <splash density="port-xxxhdpi" src="res/android/splash-port-xxxhdpi.png" />
+    </platform>
+    
+    <!-- الصلاحيات -->
+    <plugin name="cordova-plugin-whitelist" spec="1" />
+    <plugin name="cordova-plugin-statusbar" spec="2" />
+    <plugin name="cordova-plugin-splashscreen" spec="5" />
+    <plugin name="cordova-plugin-insomnia" spec="4" />
+    
+    <!-- سياسة الأمان -->
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+</widget>
