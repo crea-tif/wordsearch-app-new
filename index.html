@@ -3,11 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" content="#1a5276">
 <meta name="description" content="تطبيق تعليمي للعثور على أسماء الله الحسنى في شبكة من الحروف">
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
+<link rel="icon" href="edufun-logo-512 (24).png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,13 +17,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#f1f5f9; --accent:#f59e0b; --ok:#10b981; --warn:#f59e0b;
-  --glass: rgba(255,255,255,0.1);
+  --ink:#f1f5f9; --accent:#d4af37; --ok:#27ae60; --warn:#d4af37;
+  --glass: rgba(255,255,255,0.15);
   --cell: 32px;
-  --dark-blue: #0f172a;
-  --navy-blue: #1e3a8a;
-  --gold: #f59e0b;
-  --light-gold: #fef3c7;
+  --dark-blue: #1a5276;
+  --navy-blue: #154360;
+  --teal: #1abc9c;
+  --gold: #d4af37;
+  --light-gold: #f7dc6f;
+  --texture-color: #1a5276;
 }
 
 * {
@@ -37,20 +40,32 @@ html,body{
   margin:0; 
   color:var(--ink);
   font-family: "Tajawal", system-ui, -apple-system, "Noto Kufi Arabic", "Cairo", Tahoma, Arial;
-  background: linear-gradient(135deg, #0f172a 0%, #1e1e2e 100%) fixed;
+  background: 
+    /* Texture de fond inspirée du logo */
+    radial-gradient(circle at 20% 80%, rgba(26, 82, 118, 0.9) 0%, rgba(21, 67, 96, 0.95) 50%, rgba(26, 82, 118, 0.85) 100%),
+    /* Effet de lumière subtile */
+    radial-gradient(circle at 80% 20%, rgba(26, 188, 156, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+    /* Motif texture */
+    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px);
   overflow-x: hidden;
   touch-action: manipulation;
+  position: relative;
 }
 
+/* Ajout d'une texture supplémentaire */
 body::before{
   content:""; 
   position:fixed; 
   inset:0; 
-  z-index:-2;
+  z-index:-1;
   background: 
-    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.05) 0%, transparent 50%);
+    /* Texture de points dorés subtils */
+    radial-gradient(circle at 25% 25%, rgba(212, 175, 55, 0.1) 2px, transparent 3px),
+    radial-gradient(circle at 75% 75%, rgba(212, 175, 55, 0.08) 2px, transparent 3px),
+    radial-gradient(circle at 50% 50%, rgba(26, 188, 156, 0.05) 1px, transparent 2px);
+  background-size: 50px 50px, 80px 80px, 30px 30px;
+  pointer-events: none;
 }
 
 .container {
@@ -66,11 +81,13 @@ body::before{
 
 /* ===== حاويات زجاجية ===== */
 header, .card{
-  background: var(--glass);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, rgba(26, 82, 118, 0.8), rgba(21, 67, 96, 0.9));
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 12px;
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 header {
@@ -93,6 +110,7 @@ header {
   font-size: 14px;
   font-weight: 800;
   font-family: "Tajawal", sans-serif;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 h1 {
@@ -101,6 +119,7 @@ h1 {
   color: var(--gold);
   font-weight: 700;
   font-family: "Tajawal", sans-serif;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 /* عناصر التحكم - مضغوطة جداً */
@@ -119,35 +138,48 @@ h1 {
 .control-group label {
   font-size: 10px;
   font-weight: 500;
-  color: #e2e8f0;
+  color: #e8f6f3;
   font-family: "Tajawal", sans-serif;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.2);
 }
 
 select, button {
   padding: 6px 8px;
-  border: 1px solid rgba(255,255,255,0.2);
-  background: rgba(15, 23, 42, 0.7);
-  border-radius: 6px;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  background: rgba(26, 82, 118, 0.7);
+  border-radius: 8px;
   font-size: 11px;
   color: white;
   font-family: "Tajawal", sans-serif;
   font-weight: 500;
   -webkit-appearance: none;
   appearance: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+select:focus, button:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3);
 }
 
 button.primary {
-  background: var(--gold);
+  background: linear-gradient(135deg, var(--gold), #f7dc6f);
   border-color: var(--gold);
-  color: var(--dark-blue);
+  color: var(--navy-blue);
   font-weight: 700;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   grid-column: 1 / -1;
   margin-top: 2px;
+  text-shadow: 0 1px 1px rgba(255,255,255,0.3);
+  box-shadow: 0 3px 6px rgba(212, 175, 55, 0.4);
 }
 
 button.primary:hover, button.primary:active {
-  background: #e69a0b;
+  background: linear-gradient(135deg, #c19b2e, #f4d03f);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(212, 175, 55, 0.5);
 }
 
 /* الشبكة - مساحة أكبر */
@@ -172,53 +204,63 @@ button.primary:hover, button.primary:active {
   display: grid;
   grid-template-columns: repeat(var(--n), var(--cell));
   grid-auto-rows: var(--cell);
-  gap: 2px;
+  gap: 3px;
   user-select: none;
   touch-action: none;
-  padding: 4px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.1);
+  padding: 6px;
+  background: rgba(26, 82, 118, 0.3);
+  border-radius: 10px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
   max-width: calc(100vw - 20px);
   max-height: calc(100vh - 250px);
+  box-shadow: 
+    inset 0 2px 4px rgba(0,0,0,0.2),
+    0 4px 8px rgba(0,0,0,0.2);
 }
 
 .cell {
   width: var(--cell);
   height: var(--cell);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255,255,255,0.1));
+  border: 1px solid rgba(212, 175, 55, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: calc(var(--cell) * 0.38);
   font-weight: 800;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   color: white;
   font-family: "Tajawal", sans-serif;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .cell.preview { 
   outline: 2px dashed var(--gold); 
-  background: rgba(245, 158, 11, 0.25); 
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), rgba(247, 220, 111, 0.3));
+  border-color: var(--gold);
+  transform: scale(1.05);
 }
 
 .cell.valid-preview { 
   outline: 2px solid var(--gold); 
-  background: rgba(245, 158, 11, 0.35);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.6), rgba(247, 220, 111, 0.4));
+  border-color: var(--gold);
+  transform: scale(1.05);
 }
 
 .cell.hint {
-  background: rgba(245, 158, 11, 0.35);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.5), rgba(247, 220, 111, 0.3));
   border-color: var(--gold);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
 }
 
 .cell.found {
-  background: rgba(16, 185, 129, 0.4);
-  border-color: rgba(16, 185, 129, 0.7);
-  color: #d1fae5;
+  background: linear-gradient(135deg, rgba(39, 174, 96, 0.6), rgba(46, 204, 113, 0.4));
+  border-color: rgba(39, 174, 96, 0.8);
+  color: #e8f8ef;
+  box-shadow: 0 0 8px rgba(39, 174, 96, 0.4);
 }
 
 .cell.flash {
@@ -226,8 +268,15 @@ button.primary:hover, button.primary:active {
 }
 
 @keyframes flashOk {
-  0%,100% { background: rgba(16, 185, 129, 0.4); }
-  50% { background: rgba(16, 185, 129, 0.8); color: #fff; }
+  0%,100% { 
+    background: linear-gradient(135deg, rgba(39, 174, 96, 0.6), rgba(46, 204, 113, 0.4));
+    transform: scale(1);
+  }
+  50% { 
+    background: linear-gradient(135deg, rgba(39, 174, 96, 0.9), rgba(46, 204, 113, 0.7));
+    transform: scale(1.1);
+    color: #fff;
+  }
 }
 
 /* الأهداف */
@@ -245,46 +294,51 @@ button.primary:hover, button.primary:active {
 }
 
 .badge {
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.25);
+  background: linear-gradient(135deg, rgba(26, 82, 118, 0.8), rgba(21, 67, 96, 0.9));
+  border: 1px solid rgba(212, 175, 55, 0.4);
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 10px;
   color: white;
   font-family: "Tajawal", sans-serif;
   font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .badge.found {
-  background: rgba(16, 185, 129, 0.4);
-  border-color: rgba(16, 185, 129, 0.7);
-  color: #d1fae5;
+  background: linear-gradient(135deg, rgba(39, 174, 96, 0.7), rgba(46, 204, 113, 0.5));
+  border-color: rgba(39, 174, 96, 0.8);
+  color: #e8f8ef;
+  transform: scale(1.05);
 }
 
 .help {
   font-size: 10px;
-  color: #cbd5e1;
+  color: #d1f2eb;
   line-height: 1.3;
   margin-top: 6px;
   font-family: "Tajawal", sans-serif;
   padding: 0 2px;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.2);
 }
 
 .footer {
   font-size: 10px;
-  color: #e2e8f0;
+  color: #e8f6f3;
   margin-top: 4px;
   text-align: center;
   font-family: "Tajawal", sans-serif;
   font-weight: 500;
   padding: 4px;
-  background: rgba(0,0,0,0.2);
+  background: rgba(21, 67, 96, 0.5);
   border-radius: 6px;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.2);
 }
 
 hr {
   border: none;
-  border-top: 1px solid rgba(255,255,255,0.15);
+  border-top: 1px solid rgba(212, 175, 55, 0.3);
   margin: 6px 0;
 }
 
@@ -324,14 +378,16 @@ aside.card h3 {
   font-size: 12px;
   color: var(--gold);
   margin-bottom: 6px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .status-highlight {
-  background: rgba(245, 158, 11, 0.2);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(247, 220, 111, 0.2));
   padding: 2px 6px;
   border-radius: 10px;
   font-weight: 700;
   font-size: 10px;
+  border: 1px solid rgba(212, 175, 55, 0.4);
 }
 
 /* تحسينات إضافية للشاشات الصغيرة */
@@ -380,6 +436,16 @@ aside.card h3 {
   .targets-container {
     max-height: 60px;
   }
+}
+
+/* Animation pour les nouveaux éléments */
+@keyframes gentlePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.brand, h1 {
+  animation: gentlePulse 4s ease-in-out infinite;
 }
 </style>
 </head>
@@ -738,7 +804,7 @@ function confettiBurst() {
     const confetti = document.createElement('div');
     confetti.className = 'confetti';
     
-    const colors = ['#f59e0b', '#fbbf24', '#fcd34d', '#1e3a8a', '#10b981'];
+    const colors = ['#d4af37', '#f7dc6f', '#1abc9c', '#1a5276', '#27ae60'];
     confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
     
     confetti.style.left = `${Math.random() * 100}%`;
@@ -930,7 +996,7 @@ window.addEventListener('load', () => {
 /* تشغيل أولي */
 generate(0);
 
-// ===== SERVICE WORKER CORRIGÉ =====
+// ===== SERVICE WORKER =====
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('./sw.js')
