@@ -69,6 +69,27 @@ body::before{
   pointer-events: none;
 }
 
+/* Indicateur hors ligne */
+body.offline::after {
+  content: "📴 وضع عدم الاتصال";
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: #e74c3c;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-family: Tajawal, sans-serif;
+  z-index: 1000;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
 .container {
   max-width: 100%;
   margin: 0 auto;
@@ -506,6 +527,7 @@ aside.card h3 {
 <div class="celebration" id="celebration"></div>
 
 <script>
+// Gestion des événements tactiles
 document.addEventListener('touchstart', function(e) {
   if (e.touches.length > 1) {
     e.preventDefault();
@@ -585,13 +607,11 @@ function buildGrid() {
   }
 }
 
-// VERSION AMÉLIORÉE AVEC TOUTES LES DIRECTIONS
 function tryPlace(word) {
   const chars = normalize(word).split(''), 
         L = chars.length;
   if (L > N) return false;
   
-  // TOUTES LES DIRECTIONS POSSIBLES
   const dirs = [
     { dr: 0, dc: -1 },   // ← Gauche
     { dr: 0, dc: 1 },    // → Droite  
@@ -603,10 +623,9 @@ function tryPlace(word) {
     { dr: 1, dc: 1 }     // ↘ Bas-Droite
   ];
   
-  for (let t = 0; t < 300; t++) { // Plus d'essais pour plus de directions
+  for (let t = 0; t < 300; t++) {
     const dir = dirs[Math.floor(Math.random() * dirs.length)];
     
-    // Calcul des limites selon la direction
     let rMin = 0, rMax = N, cMin = 0, cMax = N;
     
     if (dir.dr === -1) { rMin = L - 1; } 
@@ -730,26 +749,22 @@ function updateStatus() {
   statusEl.innerHTML = `<span class="status-highlight">المتبقي: ${remaining.size} / ${targetNames.length}</span>`;
 }
 
-// FONCTION COLLECTLINE AMÉLIORÉE POUR TOUTES LES DIRECTIONS
 function collectLine(f, t) {
   const dr = t.r - f.r;
   const dc = t.c - f.c;
   
-  // Horizontal
   if (dr === 0) {
     const L = [];
     const step = dc > 0 ? 1 : -1;
     for (let c = f.c; c !== t.c + step; c += step) L.push({ r: f.r, c });
     return L;
   }
-  // Vertical
   if (dc === 0) {
     const L = [];
     const step = dr > 0 ? 1 : -1;
     for (let r = f.r; r !== t.r + step; r += step) L.push({ r, c: f.c });
     return L;
   }
-  // Diagonales (même pente)
   if (Math.abs(dr) === Math.abs(dc)) {
     const L = [];
     const rStep = dr > 0 ? 1 : -1;
@@ -1011,19 +1026,49 @@ window.addEventListener('load', () => {
   setTimeout(adjustCellSize, 500);
 });
 
-generate(0);
-
+// ===== SERVICE WORKER - HORS LIGNE =====
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('./sw.js')
       .then(function(registration) {
-        console.log('Service Worker enregistré avec succès: ', registration.scope);
+        console.log('✅ Service Worker enregistré avec succès: ', registration.scope);
+        
+        // Vérifier les mises à jour
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          console.log('🔄 Nouveau Service Worker trouvé:', newWorker);
+          
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('📦 Nouvelle version disponible! Recharger pour mettre à jour.');
+            }
+          });
+        });
       })
       .catch(function(error) {
-        console.log("Échec de l'enregistrement du Service Worker: ", error);
+        console.log("❌ Échec de l'enregistrement du Service Worker: ", error);
       });
+
+    // Vérifier quand le Service Worker est prêt
+    navigator.serviceWorker.ready.then(() => {
+      console.log('🎯 Service Worker prêt pour le cache hors ligne');
+    });
+  });
+
+  // Surveiller les changements de connexion
+  window.addEventListener('online', () => {
+    console.log('🌐 Connexion rétablie');
+    document.body.classList.remove('offline');
+  });
+
+  window.addEventListener('offline', () => {
+    console.log('📴 Mode hors ligne activé');
+    document.body.classList.add('offline');
   });
 }
+
+// Démarrer l'application
+generate(0);
 </script>
 </body>
 </html>
