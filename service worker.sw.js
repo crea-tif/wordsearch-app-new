@@ -1,91 +1,79 @@
-const CACHE_NAME = 'wordsearch-cache-v4';
+const CACHE_NAME = 'wordsearch-offline-v2';
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
-  './style.css', // si tu as un fichier CSS
-  './app.js',    // si tu as un fichier JS
-  // Ajoute ici toutes les images et polices
+  // Ajoute d'autres fichiers si tu en as
 ];
 
-// Installation - mise en cache
-self.addEventListener('install', event => {
-  console.log('Service Worker: Installation');
+// Installation
+self.addEventListener('install', (event) => {
+  console.log('🔄 Installation du Service Worker');
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Service Worker: Mise en cache des fichiers');
+      .then((cache) => {
+        console.log('📦 Mise en cache des fichiers');
         return cache.addAll(urlsToCache);
       })
       .then(() => {
-        console.log('Service Worker: Installation terminée');
+        console.log('✅ Toutes les ressources en cache');
         return self.skipWaiting();
-      })
-      .catch(error => {
-        console.error('Service Worker: Erreur installation', error);
       })
   );
 });
 
-// Activation - nettoyage anciens caches
-self.addEventListener('activate', event => {
-  console.log('Service Worker: Activation');
+// Activation
+self.addEventListener('activate', (event) => {
+  console.log('🎯 Service Worker Activé');
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cache => {
           if (cache !== CACHE_NAME) {
-            console.log('Service Worker: Suppression ancien cache', cache);
+            console.log('🗑️ Suppression ancien cache:', cache);
             return caches.delete(cache);
           }
         })
       );
-    }).then(() => {
-      console.log('Service Worker: Activation terminée');
-      return self.clients.claim();
-    })
+    }).then(() => self.clients.claim())
   );
 });
 
 // Interception des requêtes
-self.addEventListener('fetch', event => {
-  // Ignore les requêtes non-GET
+self.addEventListener('fetch', (event) => {
+  // Ignorer les requêtes non-GET
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
     caches.match(event.request)
-      .then(response => {
+      .then((response) => {
         // Retourne le cache si disponible
         if (response) {
-          console.log('Service Worker: Ressource depuis cache', event.request.url);
+          console.log('📂 Depuis cache:', event.request.url);
           return response;
         }
-
-        // Sinon, fetch du réseau et mise en cache
-        console.log('Service Worker: Fetch depuis réseau', event.request.url);
+        
+        // Sinon, va au réseau
+        console.log('🌐 Depuis réseau:', event.request.url);
         return fetch(event.request)
-          .then(response => {
-            // Vérifie que la réponse est valide
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
+          .then((response) => {
+            // Met en cache les nouvelles ressources
+            if (response && response.status === 200) {
+              const responseClone = response.clone();
+              caches.open(CACHE_NAME)
+                .then((cache) => {
+                  cache.put(event.request, responseClone);
+                });
             }
-
-            // Clone la réponse pour la mettre en cache
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-
             return response;
           })
-          .catch(error => {
-            console.error('Service Worker: Fetch failed', error);
-            // Peut retourner une page offline personnalisée ici
-            return new Response('Mode hors ligne - Réessayez plus tard', {
-              status: 408,
-              headers: { 'Content-Type': 'text/plain' }
-            });
+          .catch((error) => {
+            console.log('❌ Erreur fetch:', error);
+            // Page de secours si hors ligne
+            return new Response(
+              '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>Hors ligne</title><style>body{background:#1a5276;color:white;font-family:Tajawal;text-align:center;padding:50px;}</style></head><body><h1>🔄 Mode hors ligne</h1><p>L\'application fonctionnera à la reconnexion</p><button onclick="location.reload()">Réessayer</button></body></html>',
+              { headers: { 'Content-Type': 'text/html' } }
+            );
           });
       })
   );
